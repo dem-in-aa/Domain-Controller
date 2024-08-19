@@ -400,7 +400,8 @@ samba-tool ntacl sysvolreset
 RSAT и нажать на первую ссылку из поиска, в тексте найти указанную ниже строку установки и скопировать её в командную строку:
 
 Выполнить → cmd (по правой кнопке мыши - от Администратора) → 
-```dism /online /add-capability /CapabilityName:Rsat.GroupPolicy.Management.Tools~~~~0.0.1.0 /CapabilityName:Rsat.Dns.Tools~~~~0.0.1.0 /CapabilityName:Rsat.ActiveDirectory.DS-LDS.Tools~~~~0.0.1.0
+```dism /online /add-capability /CapabilityName:Rsat.GroupPolicy.Management.Tools~~~~0.0.1.0 /CapabilityName:Rsat.Dns.Tools~~~~0.0.1.0
+ /CapabilityName:Rsat.ActiveDirectory.DS-LDS.Tools~~~~0.0.1.0
 ```
 В случае ошибок установки RSAT можно использовать виртуальную машину с предустановленными утилитами RSAT: 
 ```
