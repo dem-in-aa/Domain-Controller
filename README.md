@@ -412,6 +412,8 @@ samba-tool gpo listall
 ```
 ![](img/gpo_list_user.png)
 ------
+![](img/gpo_listall.png)
+------
 Далее после изменения GPO на Windows 10 могут сбиться права доступа, это можно продиагностировать и исправить такими командами:
 ```
 samba-tool ntacl sysvolcheck
