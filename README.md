@@ -168,7 +168,7 @@ echo "nameserver 10.0.2.1" > /etc/resolv.conf
 ```
 ping ya.ru
 ```
-![](img/ping ya.ru.png)
+![](img/ping_ya.ru.png)
 ------
 2. Установка имени сервера Debian 11:
 ```
