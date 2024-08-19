@@ -142,6 +142,8 @@ gpresult /r
 
 1. Установка статического IP-адреса в Debian 11:
 
+![](img/network1.png)
+------
 Для установки адреса отключить интерфейс и выполнить команду редактирования файла /etc/network/interfaces:
 ```
 ifdown enp0s3
@@ -155,7 +157,8 @@ iface enp0s3 inet static
  address 10.0.2.3/24
  gateway 10.0.2.1
 ```
-
+![](img/network2.png)
+------
 Для поднятия интерфейса и настройки разрешения имён выполнить:
 ```
 ifup enp0s3
@@ -165,6 +168,8 @@ echo "nameserver 10.0.2.1" > /etc/resolv.conf
 ```
 ping ya.ru
 ```
+![](img/ping ya.ru.png)
+------
 2. Установка имени сервера Debian 11:
 ```
 echo dc1.example.com > /etc/hostname
@@ -222,6 +227,8 @@ options{
 systemctl restart bind9
 systemctl status bind9
 ```
+![](img/bind9.png)
+------
 5. Настройка DHCP в Debian 11:
 
 Отредактировать запуск сервера DHCP на интерфейсе enp0s3:
@@ -250,6 +257,8 @@ subnet 10.0.2.0 netmask 255.255.255.0 {
 systemctl restart isc-dhcp-server
 systemctl status isc-dhcp-server
 ```
+![](img/dhcp_status.png)
+------
 6.  Запуск контроллера домена на Debian 11:
 
 Установить разрешение имён на локальный сервер:
@@ -272,19 +281,16 @@ cp /var/lib/samba/private/krb5.conf /etc/krb5.conf
 ```
 kinit Administrator
 ```
+![](img/kinit.png)
+------
 Команда:
 ```
 klist
 ```
 должна выдать информацию о полученном билете Kerberos:
 
-Ticket cache: FILE:/tmp/krb5cc_0
-Default principal: Administrator@EXAMPLE.COM
-Valid starting       Expires              Service principal
-....                 ....                 krbtgt/EXAMPLE.COM@EXAMPLE.COM
-       renew until .....
-
- 
+![](img/klist.png)
+------
 
 7. Редактирование DNS в Debian 11:
 ```
@@ -298,48 +304,80 @@ samba-tool dns add dc1 2.0.10.in-addr.arpa 15 PTR www.example.com
 ```
 host dc1
 ```
-должна выдать: dc1.example.com has address 10.0.2.3
+должна выдать:
+
+![](img/host_dc1.png)
+------
 ```
 host 10.0.2.3
 ```
-должна выдать: 3.2.0.10.in-addr.arpa domain name pointer dc1.example.com.
+должна выдать:
+
+![](img/host_1.png)
+------
 ```
 host www
 ```
 должна выдать: www.example.com has address 10.0.2.15
+
+![](img/host_www.png)
+------
 ```
 host yandex.ru
 ```
 должна выдать ip адреса серверов yandex.ru
 
+![](img/host_yandex.png)
+------
 Просмотр всех записей DNS прямой зоны adm.org:
 ```
 samba-tool dns query dc1 example.com @ ALL
 ```
+
+![](img/samba_dns_1.png)
+------
 Просмотр всех записей DNS обратной зоны 2.0.10.in-addr.arpa
 ```
 samba-tool dns query dc1 2.0.10.in-addr.arpa @ ALL
 ```
+
+![](img/samba_dns_2.png)
+------
 Проверить работу домена:
 ```
 samba-tool domain info example.com
 ```
+
+![](img/domain_info.png)
+------
 Протестировать список пользователей
 ```
 wbinfo -u
 ```
+
+![](img/users.png)
+------
 и групп
 ```
 wbinfo -g
 ```
+
+![](img/groups.png)
+------
 Протестировать получение списка компьютеров домена:
 ```
 samba-tool computer list
 ```
+
+![](img/comp_list.png)
+------
 Посмотреть текущий уровень работы домена:
 ```
 samba-tool domain level show
 ```
+
+![](img/domain_level.png)
+------
 Поддерживаемые уровни работы домена samba4 можно посмотреть здесь: https://wiki.samba.org/index.php/Raising_the_Functional_Levels#Supported_Functional_Levels
 
 8. Добавление организации, групп и пользователей в контроллер домена Debian 11:
@@ -353,23 +391,27 @@ samba-tool user create --userou=ou=ZTI student3 P@ssw0rd3
 samba-tool group addmembers Group1 student1,student2
 samba-tool group addmembers Group2 student3
 ```
+
+![](img/create_all.png)
+------
 9. Создание групповой политики в Debian 11:
 ```
 samba-tool gpo create ZTI -U Administrator --password=P@ssw0rd
 ```
-Результат должен быть такой (с другим идентификатором)
-
-GPO 'ZTI' created as {C0EA2428-95D8-40FB-BD0E-78664B4E4B42}
-
 Подключить групповую политику к ZTI по ранее созданному идентификатору (из вывода предыдущей команды):
 ```
 samba-tool gpo setlink ou=ZTI,dc=example,dc=com -U Administrator --password=P@ssw0rd {C0EA2428-95D8-40FB-BD0E-78664B4E4B42}
 ```
+
+![](img/add_gpo_link.png)
+------
 Протестировать созданную политику в списке групповых политик:
 ```
 samba-tool gpo list student1
 samba-tool gpo listall
 ```
+![](img/gpo_list_user.png)
+------
 Далее после изменения GPO на Windows 10 могут сбиться права доступа, это можно продиагностировать и исправить такими командами:
 ```
 samba-tool ntacl sysvolcheck
@@ -403,6 +445,9 @@ RSAT и нажать на первую ссылку из поиска, в тек
 ```
 dism /online /add-capability /CapabilityName:Rsat.GroupPolicy.Management.Tools~~~~0.0.1.0 /CapabilityName:Rsat.Dns.Tools~~~~0.0.1.0 /CapabilityName:Rsat.ActiveDirectory.DS-LDS.Tools~~~~0.0.1.0
 ```
+
+![](img/rsat.png)
+-----
 В случае ошибок установки RSAT можно использовать виртуальную машину с предустановленными утилитами RSAT: 
 ```
 https://disk.yandex.ru/d/h0zuRR2iR7XnPg
@@ -412,15 +457,26 @@ https://disk.yandex.ru/d/h0zuRR2iR7XnPg
 
 В редакторе групповой политики перейти в User Configuration → Policies → Administrative Templates → Windows Components → Internet Explorer
 
+![](img/win_gpedit1.png)
+------
+![](img/win_gpedit2.png)
+------
 Установить начальную страницу:
 
 Отредактировать Disable changing home page settings, установить Enabled и http://yandex.ru
 
+![](img/win_gpedit3.png)
+------
+![](img/win_gpedit4.png)
+------
 И заодно уберём надоедливый мастер настройки:
 
 Отредактировать Prevent running First Run wizard, установить Enabled и Start page.
 
-Закрыть редактор групповой политики Group Policy.
+![](img/win_gpedit5.png)
+------
+![](img/win_gpedit6.png)
+------
 
 12. Проверка групповой политики на Windows 10:
 
@@ -430,6 +486,13 @@ https://disk.yandex.ru/d/h0zuRR2iR7XnPg
 ```
 gpresult /r
 ```
+![](img/gpresult.png)
+------
+```
+ipconfig /all
+```
+![](img/debian_11_result/ipconfig_all.png)
+------
 Запустить Internet Explorer. Должна отображаться страница yandex.ru.
 
 
